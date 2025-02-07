@@ -151,19 +151,6 @@ aicr
 # 查看 AI 审查意见并确认是否提交
 ```
 
-## 开发
-
-```bash
-# 克隆仓库
-git clone https://github.com/yourusername/ai-code-review.git
-
-# 安装依赖
-pnpm install
-
-# 运行测试
-pnpm test
-```
-
 ## 许可证
 
 MIT
