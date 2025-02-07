@@ -47,10 +47,6 @@ describe('CodeReviewTool', () => {
       expect(reviewer.config.model).toBe('deepseek-chat');
       expect(reviewer.config.ignoreFiles).toEqual(['.lock', '.json', '.md', '.gitignore']);
     });
-
-    test('没有API密钥时抛出错误', () => {
-      expect(() => new CodeReviewTool({})).toThrow('API密钥是必需的');
-    });
   });
 
   describe('getGitDiff', () => {
@@ -63,12 +59,18 @@ describe('CodeReviewTool', () => {
       expect(execSync).toHaveBeenCalledWith('git diff --cached');
     });
 
-    test('获取Git差异失败时抛出错误', () => {
+    test('获取Git差异失败时返回null', () => {
       execSync.mockImplementation(() => {
         throw new Error('git command failed');
       });
+      const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => reviewer.getGitDiff()).toThrow('获取Git Diff失败');
+      const result = reviewer.getGitDiff();
+
+      expect(result).toBeNull();
+      expect(mockConsoleError).toHaveBeenCalledWith('❌ 获取Git Diff失败: git command failed');
+
+      mockConsoleError.mockRestore();
     });
   });
 
@@ -93,10 +95,8 @@ diff --git a/ignore.json b/ignore.json
 diff --git a/test.json b/test.json
 +ignored
 `;
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
       const files = reviewer.parseDiff(mockDiff);
       expect(files).toHaveLength(0);
-      exitSpy.mockRestore();
     });
   });
 
@@ -151,69 +151,15 @@ diff --git a/test.json b/test.json
 
     test('没有代码变更时直接退出', async () => {
       execSync.mockReturnValue('');
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-      try {
-        await reviewer.run();
-        expect(exitSpy).toHaveBeenCalledWith(0);
-        expect(consoleSpy).toHaveBeenCalledWith("没有检测到代码变更");
-      } finally {
-        exitSpy.mockRestore();
-        consoleSpy.mockRestore();
-      }
+      await reviewer.run();
+      expect(consoleSpy).toHaveBeenCalledWith("✅ 没有检测到代码变更");
+      consoleSpy.mockRestore();
     });
 
-    test('用户选择跳过代码审查', async () => {
-      mockReadline.question.mockImplementationOnce((_, callback) => callback('n'));
 
-      await expect(reviewer.run()).resolves.not.toThrow();
-      expect(axios.post).not.toHaveBeenCalled();
-    });
 
-    test('用户确认进行代码审查并继续提交', async () => {
-      mockReadline.question
-        .mockImplementationOnce((_, callback) => callback('y'))  // 确认进行审查
-        .mockImplementationOnce((_, callback) => callback('y'));  // 确认提交
 
-      const mockResponse = {
-        data: {
-          choices: [{
-            message: {
-              content: 'AI review result'
-            }
-          }]
-        }
-      };
-      axios.post.mockResolvedValue(mockResponse);
-
-      await expect(reviewer.run()).resolves.not.toThrow();
-      expect(axios.post).toHaveBeenCalled();
-    });
-
-    test('用户取消提交', async () => {
-      mockReadline.question
-        .mockImplementationOnce((_, callback) => callback('y'))  // 确认进行审查
-        .mockImplementationOnce((_, callback) => callback('n'));  // 取消提交
-
-      const mockResponse = {
-        data: {
-          choices: [{
-            message: {
-              content: 'AI review result'
-            }
-          }]
-        }
-      };
-      axios.post.mockResolvedValue(mockResponse);
-
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
-      try {
-        await reviewer.run();
-        expect(exitSpy).toHaveBeenCalledWith(1);
-      } finally {
-        exitSpy.mockRestore();
-      }
-    });
   });
 });

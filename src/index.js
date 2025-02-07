@@ -17,7 +17,8 @@ class CodeReviewTool {
     };
 
     if (!this.config.apiKey) {
-      throw new Error("API密钥是必需的。请在配置中提供apiKey。");
+      console.error("❌ API密钥是必需的。请在配置中提供apiKey。详情请查看文档");
+      process.exit(0);
     }
 
     // 创建一个可重用的 readline 实例
@@ -47,7 +48,8 @@ class CodeReviewTool {
       const diff = execSync("git diff --cached").toString();
       return diff;
     } catch (error) {
-      throw new Error(`获取Git Diff失败: ${error.message}`);
+      console.error(`❌ 获取Git Diff失败: ${error.message}`);
+      return null;
     }
   }
 
@@ -61,8 +63,9 @@ class CodeReviewTool {
         if (currentFile) {
           files.push(currentFile);
         }
+        const filename = line.split(" b/")[1];
         currentFile = {
-          filename: line.split(" b/")[1],
+          filename,
           changes: [],
         };
       } else if (currentFile && (line.startsWith("+") || line.startsWith("-"))) {
@@ -75,7 +78,10 @@ class CodeReviewTool {
     }
 
     return files.filter(file => {
-      return !this.config.ignoreFiles.some(ignore => file.filename.endsWith(ignore));
+      const extension = path.extname(file.filename);
+      return !this.config.ignoreFiles.some(ignore => 
+        ignore.startsWith(".") ? extension === ignore : file.filename.endsWith(ignore)
+      );
     });
   }
 
@@ -99,7 +105,7 @@ class CodeReviewTool {
             },
             {
               role: "user",
-              content: JSON.stringify(files.map(file => file.changes.join("\n")).join("\n")),
+              content: JSON.stringify(files.map(file => ({ filename: file.filename, changes: file.changes.join("\n") })))
             },
           ],
           stream: false,
@@ -109,20 +115,22 @@ class CodeReviewTool {
             Authorization: `Bearer ${this.config.apiKey}`,
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       const aiResponse = response?.data?.choices?.[0]?.message?.content;
       if (!aiResponse) {
-        spinner.fail("AI响应格式错误或为空");
-        return true;
+        spinner.warn("服务器繁忙，无法获取 AI 审查结果。");
+        const shouldContinue = await this.promptUser("\n是否继续提交代码? (y/N) ");
+        return shouldContinue;
       }
 
       spinner.stop();
       console.log("\n🔍 AI代码审查结果:\n");
       console.log(aiResponse);
 
-      return await this.promptUser("\n是否继续提交? (y/N) ");
+      const shouldProceed = await this.promptUser("\n是否继续提交? (y/N) ");
+      return shouldProceed;
     } catch (error) {
       spinner.fail(`AI代码审查失败: ${error.message}`);
       return true;
@@ -152,11 +160,13 @@ class CodeReviewTool {
       const shouldProceed = await this.reviewCode(files);
       if (!shouldProceed) {
         console.log("\n❌ 提交已取消\n");
-        process.exit(1);
+        return;
       }
+
+      return true;
     } catch (error) {
       console.error("❌ 执行失败:", error.message);
-      process.exit(1);
+      process.exit(0);
     }
   }
 }
