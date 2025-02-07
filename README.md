@@ -15,11 +15,11 @@
 ## 安装
 
 ```bash
-npm install -g ai-code-review
+npm install -g ai-cr
 # 或者
-yarn global add ai-code-review
+yarn global add ai-cr
 # 或者
-pnpm add -g ai-code-review
+pnpm add -g ai-cr
 ```
 
 ## 使用方法

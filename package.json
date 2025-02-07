@@ -1,10 +1,10 @@
 {
-  "name": "ai-code-review",
+  "name": "ai-cr",
   "version": "1.0.0",
-  "description": "AI powered code review tool for git commits",
+  "description": "AI code review tools that rely on the DeepSeek model to support git submissions",
   "main": "src/index.js",
   "bin": {
-    "aicr": "./src/index.js"
+    "aicr": "src/index.js"
   },
   "scripts": {
     "test": "jest",
@@ -13,13 +13,14 @@
   "keywords": [
     "code-review",
     "ai",
-    "git"
+    "git",
+    "deepseek"
   ],
   "author": "HiYoung",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/568815707/ai-code-review"
+    "url": "git+https://github.com/568815707/ai-code-review.git"
   },
   "dependencies": {
     "axios": "^1.6.2",
