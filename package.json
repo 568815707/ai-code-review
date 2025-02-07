@@ -1,5 +1,5 @@
 {
-  "name": "ai-cr",
+  "name": "ai-code-review-assistant",
   "version": "1.0.0",
   "description": "AI code review tools that rely on the DeepSeek model to support git submissions",
   "main": "src/index.js",
@@ -16,7 +16,8 @@
     "git",
     "deepseek",
     "ai-cr",
-    "ai-code-review"
+    "ai-code-review",
+    "ai-code-review-assistant"
   ],
   "author": "HiYoung",
   "license": "MIT",
