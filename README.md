@@ -2,7 +2,7 @@
 
 一个基于 AI 的代码审查工具，可以自动对 Git 暂存区的代码变更进行智能分析和审查。目前只支持 DeepSeek 的 API，未来会支持更多的 AI 模型。
 
-> **注意**：由于 DeepSeek API 使用人数较多，可能偶尔会遇到服务器繁忙的情况。如果遇到此类问题，建议稍后重试。
+> **注意**：由于 DeepSeek API 使用人数较多，可能偶尔会遇到服务器繁忙的情况。如果遇到此类问题，建议稍后重试。安装过程依赖 Node.js，请确保已安装 Node.js。
 
 ## 特性
 
@@ -105,16 +105,9 @@ npx husky add .husky/pre-commit "aicr"
 
 ## 配置
 
-### 环境变量
+### 配置文件（推荐）
 
-你可以通过环境变量来配置工具：
-
-- `REVIEW_API_KEY`: AI API 密钥（必需）
-- `REVIEW_API_ENDPOINT`: 自定义 API 端点（可选）
-
-### 配置文件
-
-你也可以在项目根目录创建 `.reviewrc.json` 文件进行配置：
+推荐在项目根目录创建 `.reviewrc.json` 文件进行配置，这是最简单和可维护的配置方式：
 
 ```json
 {
@@ -133,6 +126,42 @@ npx husky add .husky/pre-commit "aicr"
 - `ignoreFiles`: 忽略的文件类型（可选，默认值如上）
 - `maxDiffLines`: 最大审查行数（可选，默认 300 行）
 - `model`: 使用的 AI 模型（可选，默认 'deepseek-chat'）
+
+### 电脑系统环境变量
+
+你也可以通过系统环境变量来配置工具。根据你的操作系统，可以使用以下方式设置：
+
+#### Windows
+
+1. 右键点击"此电脑"或"我的电脑"，选择"属性"
+2. 点击"高级系统设置"
+3. 点击"环境变量"
+4. 在"用户变量"或"系统变量"区域点击"新建"
+5. 添加以下变量：
+   - 变量名：`REVIEW_API_KEY`，变量值：你的 API 密钥
+   - 变量名：`REVIEW_API_ENDPOINT`，变量值：自定义 API 端点（可选）
+
+#### macOS/Linux
+
+1. 编辑你的 shell 配置文件（例如 `~/.bashrc`、`~/.zshrc` 等）
+2. 添加以下行：
+   ```bash
+   export REVIEW_API_KEY="your-api-key"
+   export REVIEW_API_ENDPOINT="https://api.example.com/chat/completions"  # 可选
+   ```
+3. 保存文件并重新加载配置：
+   ```bash
+   source ~/.bashrc  # 或 source ~/.zshrc
+   ```
+
+### 项目环境变量
+
+除了配置文件和系统环境变量，你还可以在项目中使用 .env 文件来配置环境变量：
+
+```env
+REVIEW_API_KEY=your-api-key
+REVIEW_API_ENDPOINT=https://api.example.com/chat/completions  # 可选
+```
 
 注意：环境变量的优先级高于配置文件。
 

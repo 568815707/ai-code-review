@@ -2,6 +2,7 @@
 
 const { execSync } = require("child_process");
 const axios = require("axios");
+const os = require("os");
 const ora = require("ora");
 const path = require("path");
 const fs = require("fs");
@@ -187,8 +188,8 @@ const loadConfig = () => {
   // 环境变量优先级高于配置文件
   return {
     ...config,
-    apiKey: process.env.REVIEW_API_KEY || config.apiKey,
-    apiEndpoint: process.env.REVIEW_API_ENDPOINT || config.apiEndpoint,
+    apiKey: os?.environ?.REVIEW_API_KEY || process.env.REVIEW_API_KEY || config.apiKey,
+    apiEndpoint: os?.environ?.REVIEW_API_ENDPOINT || process.env.REVIEW_API_ENDPOINT || config.apiEndpoint,
   };
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "ai-code-review-assistant",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AI code review tools that rely on the DeepSeek model to support git submissions",
   "main": "src/index.js",
   "bin": {
@@ -16,6 +16,7 @@
     "git",
     "deepseek",
     "ai-cr",
+    "codeReview",
     "ai-code-review",
     "ai-code-review-assistant"
   ],
