@@ -21,6 +21,67 @@ yarn global add ai-code-review-assistant
 # 或者
 pnpm add -g ai-code-review-assistant
 ```
+## 配置
+
+### 配置文件（推荐）
+
+推荐在项目根目录创建 `.reviewrc.json` 文件进行配置，这是最简单和可维护的配置方式：
+
+```json
+{
+  "apiKey": "your-api-key",
+  "apiEndpoint": "https://api.example.com/chat/completions",
+  "ignoreFiles": [".lock", ".json", ".md", ".gitignore"],
+  "maxDiffLines": 300,
+  "model": "deepseek-chat"
+}
+```
+
+配置选项说明：
+
+- `apiKey`: AI API 密钥（必需）
+- `apiEndpoint`: API 端点地址（可选，默认使用 DeepSeek API）
+- `ignoreFiles`: 忽略的文件类型（可选，默认值如上）
+- `maxDiffLines`: 最大审查行数（可选，默认 300 行）
+- `model`: 使用的 AI 模型（可选，默认 'deepseek-chat'）
+
+### 电脑系统环境变量
+
+你也可以通过系统环境变量来配置工具。根据你的操作系统，可以使用以下方式设置：
+
+#### Windows
+
+1. 右键点击"此电脑"或"我的电脑"，选择"属性"
+2. 点击"高级系统设置"
+3. 点击"环境变量"
+4. 在"用户变量"或"系统变量"区域点击"新建"
+5. 添加以下变量：
+   - 变量名：`REVIEW_API_KEY`，变量值：你的 API 密钥
+   - 变量名：`REVIEW_API_ENDPOINT`，变量值：自定义 API 端点（可选）
+
+#### macOS/Linux
+
+1. 编辑你的 shell 配置文件（例如 `~/.bashrc`、`~/.zshrc` 等）
+2. 添加以下行：
+   ```bash
+   export REVIEW_API_KEY="your-api-key"
+   export REVIEW_API_ENDPOINT="https://api.example.com/chat/completions"  # 可选
+   ```
+3. 保存文件并重新加载配置：
+   ```bash
+   source ~/.bashrc  # 或 source ~/.zshrc
+   ```
+
+### 项目环境变量
+
+除了配置文件和系统环境变量，你还可以在项目中使用 .env 文件来配置环境变量：
+
+```env
+REVIEW_API_KEY=your-api-key
+REVIEW_API_ENDPOINT=https://api.example.com/chat/completions  # 可选
+```
+
+注意：环境变量的优先级高于配置文件。
 
 ## 使用方法
 
@@ -102,68 +163,6 @@ npx husky add .husky/pre-commit "aicr"
 ```
 
 这样，团队中的其他开发者在安装项目依赖时会自动启用 Git 钩子。
-
-## 配置
-
-### 配置文件（推荐）
-
-推荐在项目根目录创建 `.reviewrc.json` 文件进行配置，这是最简单和可维护的配置方式：
-
-```json
-{
-  "apiKey": "your-api-key",
-  "apiEndpoint": "https://api.example.com/chat/completions",
-  "ignoreFiles": [".lock", ".json", ".md", ".gitignore"],
-  "maxDiffLines": 300,
-  "model": "deepseek-chat"
-}
-```
-
-配置选项说明：
-
-- `apiKey`: AI API 密钥（必需）
-- `apiEndpoint`: API 端点地址（可选，默认使用 DeepSeek API）
-- `ignoreFiles`: 忽略的文件类型（可选，默认值如上）
-- `maxDiffLines`: 最大审查行数（可选，默认 300 行）
-- `model`: 使用的 AI 模型（可选，默认 'deepseek-chat'）
-
-### 电脑系统环境变量
-
-你也可以通过系统环境变量来配置工具。根据你的操作系统，可以使用以下方式设置：
-
-#### Windows
-
-1. 右键点击"此电脑"或"我的电脑"，选择"属性"
-2. 点击"高级系统设置"
-3. 点击"环境变量"
-4. 在"用户变量"或"系统变量"区域点击"新建"
-5. 添加以下变量：
-   - 变量名：`REVIEW_API_KEY`，变量值：你的 API 密钥
-   - 变量名：`REVIEW_API_ENDPOINT`，变量值：自定义 API 端点（可选）
-
-#### macOS/Linux
-
-1. 编辑你的 shell 配置文件（例如 `~/.bashrc`、`~/.zshrc` 等）
-2. 添加以下行：
-   ```bash
-   export REVIEW_API_KEY="your-api-key"
-   export REVIEW_API_ENDPOINT="https://api.example.com/chat/completions"  # 可选
-   ```
-3. 保存文件并重新加载配置：
-   ```bash
-   source ~/.bashrc  # 或 source ~/.zshrc
-   ```
-
-### 项目环境变量
-
-除了配置文件和系统环境变量，你还可以在项目中使用 .env 文件来配置环境变量：
-
-```env
-REVIEW_API_KEY=your-api-key
-REVIEW_API_ENDPOINT=https://api.example.com/chat/completions  # 可选
-```
-
-注意：环境变量的优先级高于配置文件。
 
 ## 示例
 
