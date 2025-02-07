@@ -14,7 +14,9 @@
     "code-review",
     "ai",
     "git",
-    "deepseek"
+    "deepseek",
+    "ai-cr",
+    "ai-code-review"
   ],
   "author": "HiYoung",
   "license": "MIT",
